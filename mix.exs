@@ -4,7 +4,7 @@ defmodule Hub.Mixfile do
   def project do
     [ app: :hub,
       version: "0.0.1",
-      elixir: "~> 1.0.0-rc1",
+      elixir: "~> 1.0.0",
       elixirc_paths: ["lib", "web"],
       deps: deps ]
   end
@@ -13,7 +13,7 @@ defmodule Hub.Mixfile do
   def application do
     [
       mod: { Hub, [] },
-      applications: [:phoenix, :cowboy, :logger]
+      applications: [:phoenix, :cowboy, :logger, :httpoison]
     ]
   end
 
@@ -24,8 +24,11 @@ defmodule Hub.Mixfile do
   # { :barbat, "~> 0.1", github: "elixir-lang/barbat" }
   defp deps do
     [
+      {:cowboy, "~> 1.0.0"},
+      {:amrita, "~>0.4", github: "josephwilk/amrita"},
       {:phoenix, "0.4.1"},
-      {:cowboy, "~> 1.0.0"}
+      {:httpoison, "~> 0.4"},
+      {:urna, "~> 0.1"}
     ]
   end
 end
