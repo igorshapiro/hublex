@@ -1,7 +1,7 @@
 Code.require_file "../../test_helper.exs", __ENV__.file
 
 defmodule GoldenFlowsFacts do
-  use Amrita.Sweet
+  use IntegrationTest.Case
 
   defmodule TestService do
     use Urna, adapters: [Urna.JSON]
@@ -14,13 +14,16 @@ defmodule GoldenFlowsFacts do
   end
 
   setup do
-    {:ok, status} = RESTClient.start
+    start_server
+    :ok
   end
+
+  # teardown do
+  #   stop_server
+  # end
 
   test "Check URNA" do
     Urna.start TestService, port: 8080
-    %HTTPoison.Response{status_code: 200} = "http://localhost:8080/order_paid"
-      |> RESTClient.post_json(%{hello: "world"})
-      |> IO.inspect
+    {:ok} = HubClient.publish 'order_paid', %{a: 1}
   end
 end

@@ -3,4 +3,7 @@ defmodule Hub.Router do
 
   get "/", Hub.PageController, :index, as: :pages
 
+  scope path: "/api/v1" do
+    post "/messages", Api.V1.MessagesController, :deliver
+  end
 end
