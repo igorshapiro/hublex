@@ -1,13 +1,33 @@
-# Hub
+# HubLex
 
-To start your new Phoenix application you have to:
+An opinionated lightweight service-bus.
 
-1. Install dependencies with `mix deps.get`
-2. Start Phoenix router with `mix phoenix.start`
+## Why?
 
-Now you can visit `localhost:4000` from your browser.
+There are a lot of frameworks for SOA,
+most of them are platform specific (.NET/Java/etc.),
+hard to integrate.
 
+Most frameworks are too heavy and too
+enterprise-oriented.
 
-## Notes
+HubLex simplifies SOA by:
 
-* If you choose to change the application's structure, you could manually start the router from your code like this `Hub.Router.start`
+- being platform-independent
+- supporting different transports
+  - for queueing
+  - for in-process/schedule/dead storage
+- being lightweight
+
+## Roadmap
+
+- Transports:
+  - RabbitMQ
+  - SQS
+- "in-progress" storage (MongoDB)
+- "scheduled" storage (MongoDB)
+- "dead-letter" storage (MongoDB)
+- Scheduled retries
+- Provide a dashboard UI
+- Monitor SLA
+- Retries
