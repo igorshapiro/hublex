@@ -3,51 +3,52 @@ ExUnit.start
 Amrita.start(formatter: Amrita.Formatter.Documentation)
 RESTClient.start
 
-defmodule HTTPServer do
-  def start_server do
+defmodule HubServer do
+  def start_hub do
     Hub.Router.start
   end
 
-  def stop_server do
-    Plug.Adapters.Cowboy.shutdown Hub.Router.HTTP
+  def stop_hub do
+    Hib.Router.stop
+  end
+
+  defmacro start_server name, port, path, handler do
+    controller_name = String.to_atom("#{name}Controller")
+    router_name = String.to_atom("#{name}Router")
+    quote do
+      ctrl = defmodule unquote(controller_name) do
+        use Phoenix.Controller
+
+        def handle conn, msg do
+          IO.puts "Got message"
+          send Process.whereis(:test_process), {:request, unquote(path), unquote(name)}
+          unquote(handler).(conn, msg)
+        end
+      end
+
+      IO.inspect ctrl
+
+      router = defmodule unquote(router_name) do
+        use Phoenix.Router
+
+        post unquote(path), unquote(controller_name), :handle
+      end
+      Application.put_env(:phoenix, unquote(router_name),
+        port: unquote(port),
+        debug_errors: true
+      )
+      IO.inspect router
+      {:ok, pid} = unquote(router_name).start()
+    end
   end
 end
+
 
 defmodule IntegrationTest.Case do
   defmacro __using__(_options) do
     quote do
       use Amrita.Sweet
-      import HTTPServer
+      import HubServer
     end
-  end
-end
-
-defmodule HubClient do
-  def url do
-    "http://localhost:4000/api/v1/messages"
-  end
-
-  def publish(metadata, content) when is_map(metadata) do
-    request Map.put(metadata, :content, content)
-  end
-
-  def publish message_type, content do
-    request %{type: message_type, content: content}
-  end
-
-  defp request payload do
-    url
-      |> RESTClient.post_json(payload)
-      |> handle_response
-  end
-
-  defp handle_response(%{status_code: http_code, body: body})
-    when http_code != 200 do
-
-    {:error, message: body, http_code: http_code}
-  end
-
-  defp handle_response(%{body: body}) do
-    {:ok}
   end
 end
